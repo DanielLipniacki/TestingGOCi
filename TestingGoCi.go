@@ -19,6 +19,10 @@ func Big(x int) int {
 	return y
 }
 
+func Unused() string {
+	return "Oh"
+}
+
 func main() {
 	fmt.Println("Hello World")
 }
