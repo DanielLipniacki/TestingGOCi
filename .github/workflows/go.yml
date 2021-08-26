@@ -34,7 +34,7 @@ jobs:
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
-        run: gotestsum -coverprofile=cover.out --junitfile unit-tests.xml
+        run: gotestsum --junitfile unit-tests.xml -- -coverprofile=cover.out
       - name: Generate HTML with coverage
         run: go tool cover -html=cover.out -o coverage.html
       - uses: actions/upload-artifact@v2
