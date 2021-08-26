@@ -27,7 +27,7 @@ jobs:
       - name: Cache files
         uses: actions/cache@v2
         with:
-          path: ./...
+          path: *
           key: ${{ runner.os }}-go
 
   test:
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/cache@v2
         id: cache
         with:
-          path: ./...
+          path: *
           key: ${{ runner.os }}-go
       - name: Test
         run: go test -v ./...
