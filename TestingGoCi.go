@@ -7,7 +7,7 @@ func Add(x, y int) int {
 }
 
 func SecondAdd(x, y int) int {
-	return x + x + y
+	return x + y
 }
 
 func Multiply(x, y int) int {
