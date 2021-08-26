@@ -31,14 +31,24 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
-      - name: Test
-        run: go test -v -cover -coverprofile cover.out ./...
+      - name: Install GoTestSum
+        run: sudo apt install gotestsum
+      - name: Run Tests
+        run: gotestsum -coverprofile=cover.out --junitfile unit-tests.xml
       - name: Generate HTML with coverage
         run: go tool cover -html=cover.out -o coverage.html
       - uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: coverage.html
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: unit-tests.xml
+
+#      - name: Test
+#  run: go test -v -cover -coverprofile cover.out ./...
 
   golangci:
     name: lint
