@@ -46,6 +46,11 @@ jobs:
         if: always()
         with:
           files: unit-tests.xml
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        if: always()
+        with:
+          report_paths: 'unit-tests.xml'
 
 #      - name: Test
 #  run: go test -v -cover -coverprofile cover.out ./...
