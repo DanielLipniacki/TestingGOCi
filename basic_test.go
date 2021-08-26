@@ -22,3 +22,10 @@ func TestMultiply(t *testing.T) {
 		t.Errorf("Respone was incorrent, got: %d, want: %s.", awn, "3")
 	}
 }
+
+func TestUnused(t *testing.T) {
+	awn := Unused()
+	if awn != "no" {
+		t.Errorf("Respone was incorrent, got: %s, want: %s.", awn, "no")
+	}
+}
