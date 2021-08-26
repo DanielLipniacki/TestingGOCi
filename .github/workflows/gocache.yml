@@ -29,6 +29,8 @@ jobs:
         with:
           path: /*
           key: ${{ runner.os }}-go
+          restore-key: |
+            ${{ runner.os }}-
 
   test:
     runs-on: ubuntu-latest
