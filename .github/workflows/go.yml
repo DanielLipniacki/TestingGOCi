@@ -46,6 +46,11 @@ jobs:
         if: always()
         with:
           report_paths: 'unit-tests.xml'
+      - uses: actions/upload-artifact@v2  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-results
+          path: unit-tests.xml
 
 #      - name: Test
 #  run: go test -v -cover -coverprofile cover.out ./...
