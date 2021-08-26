@@ -14,6 +14,11 @@ func Multiply(x, y int) int {
 	return x * y
 }
 
+func Big(x int) int {
+	y := x * x * x
+	return y
+}
+
 func main() {
 	fmt.Println("Hello World")
 }
