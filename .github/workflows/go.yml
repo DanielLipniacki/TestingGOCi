@@ -45,12 +45,6 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
-      - name: showpwd and ls
-        run: |
-          pwd
-          ls
-          ls /home/
-          ls /home/runner/go/bin
       - uses: actions/cache@v2
         with:
           # In order:
@@ -68,6 +62,12 @@ jobs:
             ${{ runner.os }}-go-
       - name: Install GoTestSum
         run: go get gotest.tools/gotestsum
+      - name: showpwd and ls
+        run: |
+          pwd
+          ls
+          ls /home/
+          ls /home/runner/go/bin
       - name: Run Tests
         run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
       - name: Generate HTML with coverage
