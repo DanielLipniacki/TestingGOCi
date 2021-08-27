@@ -21,7 +21,21 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
-
+      - uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            %LocalAppData%\go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Build
         run: go build -v ./...
 
@@ -31,8 +45,28 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
+      - name: showpwd and ls
+        run: |
+        pwd
+        ls
+        ls /home/
+      - uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            %LocalAppData%\go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Install GoTestSum
-        run: sudo apt install gotestsum
+        run: go get gotest.tools/gotestsum
       - name: Run Tests
         run: gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
       - name: Generate HTML with coverage
