@@ -45,7 +45,9 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - name: cache go files
+        id: cache-go
+        uses: actions/cache@v2
         with:
           # In order:
           # * Module download cache
@@ -54,6 +56,7 @@ jobs:
           # * Build cache (Windows)
           path: |
             ~/go/pkg/mod
+            ~/go/bin/gotestsum
             ~/.cache/go-build
             ~/Library/Caches/go-build
             %LocalAppData%\go-build
@@ -61,13 +64,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Install GoTestSum
+        if: steps.cache-go.outputs.cache-hit != 'true'
         run: go get gotest.tools/gotestsum
-      - name: showpwd and ls
-        run: |
-          pwd
-          ls
-          ls /home/
-          ls /home/runner/go/bin
       - name: Run Tests
         run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
       - name: Generate HTML with coverage
