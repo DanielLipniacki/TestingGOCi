@@ -50,7 +50,7 @@ jobs:
           pwd
           ls
           ls /home/
-          ls /home/runner/go/bin/gotestsu
+          ls /home/runner/go/bin
       - uses: actions/cache@v2
         with:
           # In order:
