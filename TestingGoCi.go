@@ -3,11 +3,11 @@ package main
 import "fmt"
 
 func Add(x, y int) int {
-	return x + y
+	return x + y + x
 }
 
 func SecondAdd(x, y int) int {
-	return x + y
+	return x + y + y
 }
 
 func Multiply(x, y int) int {
