@@ -1,8 +1,12 @@
 package main
 
 import (
-	_ "embed"
+	"bufio"
+	"crypto"
+	"encoding"
 	"fmt"
+	"html"
+	"image"
 )
 
 func Add(x, y int) int {
