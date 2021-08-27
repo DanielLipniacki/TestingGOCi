@@ -50,6 +50,7 @@ jobs:
           pwd
           ls
           ls /home/
+          ls /home/runner/go/bin/gotestsu
       - uses: actions/cache@v2
         with:
           # In order:
@@ -68,7 +69,7 @@ jobs:
       - name: Install GoTestSum
         run: go get gotest.tools/gotestsum
       - name: Run Tests
-        run: gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
+        run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
       - name: Generate HTML with coverage
         run: go tool cover -html=cover.out -o coverage.html
       - uses: actions/upload-artifact@v2
