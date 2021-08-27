@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	_ "embed"
+	"fmt"
+)
 
 func Add(x, y int) int {
 	return x + y
