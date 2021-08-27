@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/md5"
+	_ "embed"
 	"encoding/hex"
 	"fmt"
 	"html"
