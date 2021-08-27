@@ -26,13 +26,9 @@ jobs:
           # In order:
           # * Module download cache
           # * Build cache (Linux)
-          # * Build cache (Mac)
-          # * Build cache (Windows)
           path: |
             ~/go/pkg/mod
             ~/.cache/go-build
-            ~/Library/Caches/go-build
-            %LocalAppData%\go-build
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
@@ -51,21 +47,20 @@ jobs:
         with:
           # In order:
           # * Module download cache
+          # * gotestsum install location
           # * Build cache (Linux)
-          # * Build cache (Mac)
-          # * Build cache (Windows)
           path: |
             ~/go/pkg/mod
             ~/go/bin/gotestsum
             ~/.cache/go-build
-            ~/Library/Caches/go-build
-            %LocalAppData%\go-build
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Install GoTestSum
         if: steps.cache-go.outputs.cache-hit != 'true'
         run: go get gotest.tools/gotestsum
+      - name: Start Database docker
+        run: docker-compose up -d
       - name: Run Tests
         run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
       - name: Generate HTML with coverage
