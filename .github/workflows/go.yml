@@ -8,19 +8,14 @@ on:
 
 jobs:
 
-  setup:
+  build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Set Up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-
-  build:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           # In order:
@@ -38,9 +33,12 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - uses: actions/checkout@v2
+      - name: Set Up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
       - name: cache go files
         id: cache-go
         uses: actions/cache@v2
@@ -51,29 +49,34 @@ jobs:
           # * Build cache (Linux)
           path: |
             ~/go/pkg/mod
-            ~/go/bin/gotestsum
             ~/.cache/go-build
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+      - name: cache gotestsum file
+        id: cache-go
+        uses: actions/cache@v2
+        with:
+          # In order:
+          # * gotestsum install location
+          path: |
+            ~/go/bin/gotestsum
+          key: ${{ runner.os }}-gotestsum-&{{}}
+          restore-keys: |
+            ${{ runner.os }}-gotestsum
       - name: Install GoTestSum
         if: steps.cache-go.outputs.cache-hit != 'true'
         run: go get gotest.tools/gotestsum
       - name: Start Database docker
         run: docker-compose up -d
       - name: Run Tests
-        run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
+        run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out ./...
       - name: Generate HTML with coverage
         run: go tool cover -html=cover.out -o coverage.html
       - uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: coverage.html
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
-        if: always()
-        with:
-          report_paths: 'unit-tests.xml'
       - uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
@@ -87,9 +90,12 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       - uses: actions/checkout@v2
+      - name: Set Up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
@@ -100,10 +106,10 @@ jobs:
           # working-directory: somedir
 
           # Optional: golangci-lint command line arguments.
-          # args: --issues-exit-code=0
+          args: --issues-exit-code=0
 
           # Optional: show only new issues if it's a pull request. The default value is `false`.
-          # only-new-issues: true
+          only-new-issues: true
 
           # Optional: if set to true then the action will use pre-installed Go.
           skip-go-installation: true
@@ -113,3 +119,22 @@ jobs:
 
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
+
+#  findText:
+#    name: findText
+#    runs-on: ubuntu-latest
+#    needs: setup
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: find todo
+#        run: grep -rn * -e 'TODO:'
+#
+#
+#
+#      - uses: dorny/test-reporter@v1
+#        if: success() || failure() # runs even if the tests fail
+#        with:
+#          name: test-results
+#          path: unit-tests.xml
+#          reporter: java-junit
+#          max-annotations: '50'
