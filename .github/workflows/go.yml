@@ -60,10 +60,10 @@ jobs:
           # In order:
           # * gotestsum install location
           path: |
-            ~/go/bin/gotestsum
-          key: ${{ runner.os }}-gotestsum-&{{}}
+            /home/runner/go/bin/gotestsum
+          key: ${{ runner.os }}-gotestsum2
           restore-keys: |
-            ${{ runner.os }}-gotestsum
+            ${{ runner.os }}-gotestsum2
       - name: Install GoTestSum
         if: steps.cache-go.outputs.cache-hit != 'true'
         run: go get gotest.tools/gotestsum
