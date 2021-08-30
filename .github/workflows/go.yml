@@ -54,7 +54,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: cache gotestsum file
-        id: cache-go
+        id: cache-gotestsum
         uses: actions/cache@v2
         with:
           # In order:
