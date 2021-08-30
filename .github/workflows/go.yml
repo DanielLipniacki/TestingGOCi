@@ -65,7 +65,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gotestsum2
       - name: Install GoTestSum
-        if: steps.cache-go.outputs.cache-hit != 'true'
+        if: steps.cache-gotestsum.outputs.cache-hit != 'true'
         run: go get gotest.tools/gotestsum
       - name: Start Database docker
         run: docker-compose up -d
