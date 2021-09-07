@@ -90,10 +90,10 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{github.repository}}
-          run: |
-            python3 findAndComment.py >> comment.json
-            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d @comment.json \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments
+        run: |
+          python3 findAndComment.py >> comment.json
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d @comment.json \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments
 
 
 #      - name: Test
