@@ -75,7 +75,7 @@ jobs:
       - name: Run Tests
         run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out ./...
       - name: Generate HTML with coverage
-        run: go tool cover -html=cover.out -o coverage.html
+        run: go tool cover -html=cover.out -o cover.html
       - uses: actions/upload-artifact@v2
         with:
           name: coverage
