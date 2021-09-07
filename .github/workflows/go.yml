@@ -33,6 +33,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v2
       - name: Set Up Go
@@ -83,6 +86,15 @@ jobs:
           name: test-results
           path: unit-tests.xml
           reporter: java-junit
+      - name: report tests
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{github.repository}}
+          run: |
+            python3 findAndComment.py >> comment.json
+            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d @comment.json \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments
+
 
 #      - name: Test
 #  run: go test -v -cover -coverprofile cover.out ./...
@@ -120,62 +132,4 @@ jobs:
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
 
-  showFolders:
-    name: showFolders
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set Up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-      - name: Install protoc compiler #
-        env:
-          PB_REL: "https://github.com/protocolbuffers/protobuf/releases"
-          PB_VER: 3.15.8
-        run: |
-          echo $PB_REL/download/$PB_VER/protoc-$PB_VER-linux-x86_64.zip
-          curl -LO --silent --show-error --fail $PB_REL/download/$PB_VER/protoc-$PB_VER-linux-x86_64.zip
-          ls
-          unzip protoc-$PB_VER-linux-x86_64.zip -d $HOME/.local
-          export PATH="$PATH:$HOME/.local/bin"
 
-
-#  findText:
-#    name: findText
-#    runs-on: ubuntu-latest
-#    needs: setup
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: find todo
-#        run: grep -rn * -e 'TODO:'
-#
-#
-#
-#      - uses: dorny/test-reporter@v1
-#        if: success() || failure() # runs even if the tests fail
-#        with:
-#          name: test-results
-#          path: unit-tests.xml
-#          reporter: java-junit
-#          max-annotations: '50'
-
-
-
-#  testGenertedCode:
-#    name: testGenertedCode
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set Up Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: 1.17
-#      - name: Copy current code
-#        run: |
-#          mkdir tempCode
-#          cp -r pkg/model/ tempCode/
-#      - name: Generate code
-#        run: go run cmd/generator/main.go
-#      - name: Compare code
-#        run: diff -r pkg/model tempCode/model
