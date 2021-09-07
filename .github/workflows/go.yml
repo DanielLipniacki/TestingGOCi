@@ -80,12 +80,6 @@ jobs:
         with:
           name: coverage
           path: coverage.html
-      - uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: test-results
-          path: unit-tests.xml
-          reporter: java-junit
       - name: report tests
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
