@@ -30,7 +30,7 @@ func Multiply(x, y int) int {
 }
 
 func Unused() string {
-	return "no"
+	return "noo"
 }
 
 func main() {
