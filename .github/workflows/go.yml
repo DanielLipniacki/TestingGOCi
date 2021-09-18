@@ -140,11 +140,11 @@ jobs:
     steps:
       - name: parse jobs results
         run: |
-          if [["${{ needs.golangci.outputs.job-status }}" != "Success" ]]; then
+          if [[ "${{ needs.golangci.outputs.job-status }}" != "Success" ]]; then
             echo "Linter" >> results.txt; fi;
-          if [["${{ needs.test.outputs.job-status }}" != "Success" ]]; then
+          if [[ "${{ needs.test.outputs.job-status }}" != "Success" ]]; then
             echo "Testing" >> results.txt; fi;
-          if [["${{ needs.build.outputs.job-status }}" != "Success" ]]; then
+          if [[ "${{ needs.build.outputs.job-status }}" != "Success" ]]; then
             echo "Build" >> results.txt; fi;
       - name: show file
         run : cat results.txt
