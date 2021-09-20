@@ -169,7 +169,7 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Type:*\n $TYPE"
+                    "text": "*Type:*\n \$TYPE"
                   },
                   {
                     "type": "mrkdwn",
