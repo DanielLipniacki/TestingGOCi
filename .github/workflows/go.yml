@@ -140,11 +140,71 @@ jobs:
     steps:
       - name: parse jobs results
         run: |
+          touch results.txt
           if [[ "${{ needs.golangci.outputs.status }}" != "success" ]]; then
-            echo "Linter" >> results.txt; fi;
+            sed -i '$ s/$/ Linter /' results.txt; fi;
           if [[ "${{ needs.test.outputs.status }}" != "success" ]]; then
-            echo "Testing" >> results.txt; fi;
+            sed -i '$ s/$/ Testing /' results.txt; fi;
           if [[ "${{ needs.build.outputs.status }}" != "success" ]]; then
-            echo "Build" >> results.txt; fi;
+            sed -i '$ s/$/ Build /' results.txt; fi;
       - name: show file
         run : cat results.txt
+      - name: make message
+        run: |
+          cat << 'EOF' >> message.json
+  {
+    "blocks": [
+      {
+        "type": "header",
+        "text": {
+          "type": "plain_text",
+          "text": "Workflow has failed",
+          "emoji": true
+        }
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": "*Type:*\n $(cat results.txt)"
+          },
+          {
+            "type": "mrkdwn",
+            "text": "*Started by:*\n{{github.actor}}"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "fields": [
+          {
+            "type": "mrkdwn",
+            "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}|${{ github.event.pull_request.title }}>"
+          }
+        ]
+      },
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Take me to checks"
+            },
+            "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}/checks"
+          },
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": "Take me to pull request"
+            },
+            "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}"
+          }
+        ]
+      }
+    ]
+  }
+  EOF
