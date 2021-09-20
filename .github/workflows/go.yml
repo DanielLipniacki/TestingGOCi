@@ -152,59 +152,59 @@ jobs:
       - name: make message
         run: |
           cat << 'EOF' >> message.json
-  {
-    "blocks": [
-      {
-        "type": "header",
-        "text": {
-          "type": "plain_text",
-          "text": "Workflow has failed",
-          "emoji": true
-        }
-      },
-      {
-        "type": "section",
-        "fields": [
           {
-            "type": "mrkdwn",
-            "text": "*Type:*\n $(cat results.txt)"
-          },
-          {
-            "type": "mrkdwn",
-            "text": "*Started by:*\n{{github.actor}}"
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Workflow has failed",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Type:*\n $(cat results.txt)"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Started by:*\n{{github.actor}}"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}|${{ github.event.pull_request.title }}>"
+                  }
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Take me to checks"
+                    },
+                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}/checks"
+                  },
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Take me to pull request"
+                    },
+                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}"
+                  }
+                ]
+              }
+            ]
           }
-        ]
-      },
-      {
-        "type": "section",
-        "fields": [
-          {
-            "type": "mrkdwn",
-            "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}|${{ github.event.pull_request.title }}>"
-          }
-        ]
-      },
-      {
-        "type": "actions",
-        "elements": [
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "text": "Take me to checks"
-            },
-            "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}/checks"
-          },
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "text": "Take me to pull request"
-            },
-            "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}"
-          }
-        ]
-      }
-    ]
-  }
-  EOF
+          EOF
