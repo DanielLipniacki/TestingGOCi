@@ -169,7 +169,7 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Type:*\n \$TYPE"
+                    "text": "*Type:*\n $TYPE"
                   },
                   {
                     "type": "mrkdwn",
@@ -210,3 +210,5 @@ jobs:
             ]
           }
           EOF
+      - name: show file
+        run: cat message.json
