@@ -151,6 +151,7 @@ jobs:
         run : cat results.txt
       - name: make message
         run: |
+          export TYPE=$(echo results.txt)
           cat << 'EOF' >> message.json
           {
             "blocks": [
@@ -167,11 +168,11 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Type:*\n $(cat results.txt)"
+                    "text": "*Type:*\n $TYPE"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Started by:*\n{{github.actor}}"
+                    "text": "*Started by:*\n ${{ github.actor }}"
                   }
                 ]
               },
@@ -180,7 +181,7 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}|${{ github.event.pull_request.title }}>"
+                    "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/${{ github.event.issue.number }}|${{ github.event.pull_request.title }}>"
                   }
                 ]
               },
@@ -193,7 +194,7 @@ jobs:
                       "type": "plain_text",
                       "text": "Take me to checks"
                     },
-                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}/checks"
+                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{ github.event.issue.number }}/checks"
                   },
                   {
                     "type": "button",
@@ -201,7 +202,7 @@ jobs:
                       "type": "plain_text",
                       "text": "Take me to pull request"
                     },
-                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{github.event.issue.number}}"
+                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/${{ github.event.issue.number }}"
                   }
                 ]
               }
