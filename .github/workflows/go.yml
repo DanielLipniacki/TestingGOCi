@@ -132,83 +132,22 @@ jobs:
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
 
-  slackNotifiactions:
-    name: slackNotifiactions
+  snyk:
+    name: snyk
     runs-on: ubuntu-latest
-    needs: [golangci, test, build]
-    if: failure()
+    outputs:
+      status: ${{ job.status }}
     steps:
-      - name: parse jobs results
-        run: |
-          touch results.txt
-          if [[ "${{ needs.golangci.outputs.status }}" != "success" ]]; then
-            sed -i '$ s/$/ Linter /' results.txt; fi;
-          if [[ "${{ needs.test.outputs.status }}" != "success" ]]; then
-            sed -i '$ s/$/ Testing /' results.txt; fi;
-          if [[ "${{ needs.build.outputs.status }}" != "success" ]]; then
-            sed -i '$ s/$/ Build /' results.txt; fi;
-      - name: show file
-        run : cat results.txt
-      - name: make message
-        run: |
-          export TYPE=$(echo results.txt)
-          export PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          cat << EOF >> message.json
-          {
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": "Workflow has failed",
-                  "emoji": true
-                }
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Type:*\n $TYPE"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Started by:*\n ${{ github.actor }}"
-                  }
-                ]
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Pull Request:*\n <https://github.com/DanielLipniacki/TestingGOCi/pull/$PR_NUMBER|${{ github.event.pull_request.title }}>"
-                  }
-                ]
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "Take me to checks"
-                    },
-                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/$PR_NUMBER/checks"
-                  },
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "Take me to pull request"
-                    },
-                    "url": "https://github.com/DanielLipniacki/TestingGOCi/pull/$PR_NUMBER"
-                  }
-                ]
-              }
-            ]
-          }
-          EOF
-      - name: show file
-        run: cat message.json
+      - uses: actions/checkout@v2
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/golang@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
+        
