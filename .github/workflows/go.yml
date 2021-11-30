@@ -54,6 +54,9 @@ jobs:
         run: |
           ls
           pwd
+          cd main
+          ls 
+          pwd
       - name: Set Up Go
         uses: actions/setup-go@v2
         with:
