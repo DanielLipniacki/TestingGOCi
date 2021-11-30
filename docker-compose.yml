@@ -1,0 +1,19 @@
+---
+version: "3.3"
+
+services:
+  postgres:
+    image: "postgres:13.3"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=sot
+    network_mode: bridge
+    ports:
+      - "5432:5432"
+    container_name: "postgres"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

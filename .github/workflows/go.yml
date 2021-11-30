@@ -8,49 +8,108 @@ on:
 
 jobs:
 
-  setup:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ job.status }}
     steps:
+      - uses: actions/checkout@v2
       - name: Set Up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-
-  build:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Build
         run: go build -v ./...
 
 
   test:
     runs-on: ubuntu-latest
-    needs: setup
+    outputs:
+      status: ${{ job.status }}
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v2
+      - name: show folders
+        run: |
+          ls
+          pwd
+          ${{github.ref}}
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Checkout Main
+        uses: actions/checkout@v2
+        with:
+          path: main
+      - name: show folders
+        run: |
+          ls
+          pwd
+          cd main
+          ls 
+          pwd
+      - name: Set Up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: cache go files
+        id: cache-go
+        uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * gotestsum install location
+          # * Build cache (Linux)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: cache gotestsum file
+        id: cache-gotestsum
+        uses: actions/cache@v2
+        with:
+          # In order:
+          # * gotestsum install location
+          path: |
+            /home/runner/go/bin/gotestsum
+          key: ${{ runner.os }}-gotestsum2
+          restore-keys: |
+            ${{ runner.os }}-gotestsum2
       - name: Install GoTestSum
-        run: sudo apt install gotestsum
+        if: steps.cache-gotestsum.outputs.cache-hit != 'true'
+        run: go get gotest.tools/gotestsum
+      - name: Start Database docker
+        run: docker-compose up -d
       - name: Run Tests
-        run: gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out
+        run: /home/runner/go/bin/gotestsum --junitfile unit-tests.xml -- -v -cover -coverprofile=cover.out ./...
       - name: Generate HTML with coverage
-        run: go tool cover -html=cover.out -o coverage.html
+        run: go tool cover -html=cover.out -o cover.html
       - uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: coverage.html
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: unit-tests.xml
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v2
-        if: always()
-        with:
-          report_paths: 'unit-tests.xml'
+      - name: report tests and coverage
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{github.repository}}
+        run: |
+          python3 findAndComment.py >> comment.json
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -X POST -d @comment.json \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments
+
 
 #      - name: Test
 #  run: go test -v -cover -coverprofile cover.out ./...
@@ -58,9 +117,14 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
-    needs: setup
+    outputs:
+      status: ${{ job.status }}
     steps:
       - uses: actions/checkout@v2
+      - name: Set Up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
@@ -71,10 +135,10 @@ jobs:
           # working-directory: somedir
 
           # Optional: golangci-lint command line arguments.
-          # args: --issues-exit-code=0
+          args: --issues-exit-code=0
 
           # Optional: show only new issues if it's a pull request. The default value is `false`.
-          # only-new-issues: true
+          only-new-issues: true
 
           # Optional: if set to true then the action will use pre-installed Go.
           skip-go-installation: true
@@ -84,3 +148,27 @@ jobs:
 
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
+
+  snyk:
+    name: snyk
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ job.status }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/golang@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+          json: true
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: snyk.json

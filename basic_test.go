@@ -29,3 +29,10 @@ func TestUnused(t *testing.T) {
 		t.Errorf("Respone was incorrent, got: %s, want: %s.", awn, "no")
 	}
 }
+
+func TestUnused2(t *testing.T) {
+	awn := Unused()
+	if awn != "no" {
+		t.Errorf("Respone was incorrent, got: %s, want: %s.", awn, "no")
+	}
+}
