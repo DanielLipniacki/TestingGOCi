@@ -31,6 +31,9 @@ jobs:
     needs: setup
     steps:
       - uses: actions/checkout@v2
+      - name: tests
+        run: |
+          echo ${{ github.ref }}
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
