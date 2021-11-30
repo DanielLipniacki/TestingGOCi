@@ -46,6 +46,8 @@ jobs:
         run: |
           ls
           pwd
+          ${{github.ref}}
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - name: Checkout Main
         uses: actions/checkout@v2
         with:
