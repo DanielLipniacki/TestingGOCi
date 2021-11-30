@@ -42,6 +42,14 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v2
+      - name: show folders
+        run: ls
+      - name: Checkout Main
+        uses: actions/checkout@v2
+        with:
+          path: main
+      - name: show folders
+        run: ls
       - name: Set Up Go
         uses: actions/setup-go@v2
         with:
