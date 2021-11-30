@@ -32,7 +32,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: tests
         run: |
-          echo ${ github.ref##*/ }
+          export REF=${{ github.ref }}
+          echo ${ REF##*/ }
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
