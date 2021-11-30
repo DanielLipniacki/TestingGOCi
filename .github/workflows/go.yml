@@ -33,7 +33,7 @@ jobs:
       - name: tests
         run: |
           export REF=${{ github.ref }}
-          echo ${ REF##*/ }
+          echo ${REF##*/}
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
