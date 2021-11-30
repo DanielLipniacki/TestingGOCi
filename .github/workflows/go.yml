@@ -33,7 +33,6 @@ jobs:
       - name: tests
         run: |
           echo ${ github.ref##*/ }
-          echo ${{ github.ref##*/ }}
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
