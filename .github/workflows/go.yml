@@ -35,6 +35,9 @@ jobs:
         run: |
           export REF=${{ github.ref }}
           echo "::set-output name=NAME::${REF##*/}"
+      - name: dupa commit
+        run: |
+          echo 'cos'
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
@@ -62,10 +65,6 @@ jobs:
           name: mainCoverage
           path: mainCoverage.html
           retention-days: 30
-      - uses: actions/download-artifact@v2
-        name: Download Main Coverage
-        with:
-            name: mainCoverage
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: always()
