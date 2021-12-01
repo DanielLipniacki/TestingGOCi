@@ -33,7 +33,7 @@ jobs:
       - name: tests
         run: |
           export REF=${{ github.ref }}
-          echo ${REF##*/}
+          echo '::set-output name=NAME::${REF##*/}'
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
@@ -49,6 +49,16 @@ jobs:
         if: always()
         with:
           files: unit-tests.xml
+      - name: copy coverage # so files doesn't get overwritten 
+        run: |
+            cp coverage.html mainCoverage.html
+      - name: Upload coverage on main 
+        uses: actions/upload-artifact@v2
+        if: ${{ steps.getBranchName.outputs.NAME }}" == main
+        with:
+          name: mainCoverage
+          path: mainCoverage.html
+          retention-days: 30
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: always()
