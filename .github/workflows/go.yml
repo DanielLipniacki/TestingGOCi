@@ -34,7 +34,7 @@ jobs:
         id: getBranchName
         run: |
           export REF=${{ github.ref }}
-          echo '::set-output name=NAME::${REF##*/}'
+          echo "::set-output name=NAME::${REF##*/}"
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
