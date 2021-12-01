@@ -31,6 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: tests
+        id: getBranchName
         run: |
           export REF=${{ github.ref }}
           echo '::set-output name=NAME::${REF##*/}'
@@ -54,7 +55,7 @@ jobs:
             cp coverage.html mainCoverage.html
       - name: Upload coverage on main 
         uses: actions/upload-artifact@v2
-        if: ${{ steps.getBranchName.outputs.NAME }}" == mainn
+        if: ${{ steps.getBranchName.outputs.NAME }} == mainn
         with:
           name: mainCoverage
           path: mainCoverage.html
