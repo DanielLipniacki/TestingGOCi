@@ -54,11 +54,15 @@ jobs:
             cp coverage.html mainCoverage.html
       - name: Upload coverage on main 
         uses: actions/upload-artifact@v2
-        if: ${{ steps.getBranchName.outputs.NAME }}" == main
+        if: ${{ steps.getBranchName.outputs.NAME }}" == mainn
         with:
           name: mainCoverage
           path: mainCoverage.html
           retention-days: 30
+      - uses: actions/download-artifact@v2
+        name: Download Main Coverage
+        with:
+            name: mainCoverage
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
         if: always()
