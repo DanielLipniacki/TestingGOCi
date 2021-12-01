@@ -53,6 +53,8 @@ jobs:
       - name: copy coverage # so files doesn't get overwritten 
         run: |
             cp coverage.html mainCoverage.html
+      - name: echo branch name
+        run: echo ${{ steps.getBranchName.outputs.NAME }}
       - name: Upload coverage on main 
         uses: actions/upload-artifact@v2
         if: ${{ steps.getBranchName.outputs.NAME == 'main' }} 
