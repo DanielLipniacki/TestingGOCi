@@ -35,6 +35,9 @@ jobs:
         run: |
           export REF=${{ github.ref }}
           echo "::set-output name=NAME::${REF##*/}"
+      - name: dupa commit
+        run: |
+          echo 'cos'
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
