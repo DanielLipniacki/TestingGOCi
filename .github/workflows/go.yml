@@ -37,7 +37,7 @@ jobs:
           echo "::set-output name=NAME::${REF##*/}"
       - name: dupa commit
         run: |
-          echo 'cos'
+          echo 'cossssss'
       - name: Install GoTestSum
         run: sudo apt install gotestsum
       - name: Run Tests
