@@ -60,7 +60,7 @@ jobs:
         run: echo ${{ steps.getBranchName.outputs.NAME }}
       - name: Upload coverage on main 
         uses: actions/upload-artifact@v2
-        if: ${{ steps.getBranchName.outputs.NAME == 'mainn' }} 
+        if: ${{ steps.getBranchName.outputs.NAME == 'main' }} 
         with:
           name: mainCoverage
           path: mainCoverage.html
