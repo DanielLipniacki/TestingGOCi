@@ -53,6 +53,10 @@ jobs:
         if: always()
         with:
           files: unit-tests.xml
+      - name: test contriune
+        continue-on-error: true  
+        run: |
+          unzip test.zip
       - name: copy coverage # so files doesn't get overwritten 
         run: |
             cp coverage.html mainCoverage.html
