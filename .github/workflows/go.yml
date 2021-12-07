@@ -71,7 +71,7 @@ jobs:
           retention-days: 30
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v2
-        if: (success() || failure()) && ${{ steps.getBranchName.outputs.NAME != 'main' }} 
+        if: (success() || failure()) && steps.getBranchName.outputs.NAME != 'main'
         with:
           report_paths: 'unit-tests.xml'
 
