@@ -60,6 +60,9 @@ jobs:
       - name: copy coverage # so files doesn't get overwritten 
         run: |
             cp coverage.html mainCoverage.html
+      - name: copy coverage # so files doesn't get overwritten 
+        run: |
+            cp coverage.html mainCoverage2.html
       - name: echo branch name
         run: echo ${{ steps.getBranchName.outputs.NAME }}
       - name: Upload coverage on main 
